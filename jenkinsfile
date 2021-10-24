@@ -7,13 +7,13 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                sh "docker compose up "
+                docker compose up 
             }
         }
 
         stage('test') {
             steps {
-                sh 'test successful'
+                echo 'test successful'
             }
         }
         stage('Deploy') {
