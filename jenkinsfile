@@ -2,7 +2,7 @@ pipeline {
     agent any 
     environment {
         //TODO # 1 --> once you sign up for Docker hub, use that user_id here
-        docker_hub = "narayandvb/dockerp/reactfirst"
+        docker_hub = "narayandvb/dockerp"
         //TODO #2 - update your credentials ID after creating credentials for connecting to Docker Hub
         dockerCredential = 'dockerCred'
         dockerImage = ''
@@ -18,10 +18,9 @@ pipeline {
     // Building Docker images
     stage('Building image') {
       steps{
-        // script {
-        //   dockerImage = docker.build docker_hub
-        // }
-    echo "building"
+        script {
+          dockerImage = docker.build docker_hub
+        }
       }
     }
     
