@@ -19,7 +19,7 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-          docker.build("narayandvb/dockerp")
+          docker.build("narayandvb/dockerp-react")
         }
       }
     }
