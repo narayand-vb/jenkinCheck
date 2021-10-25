@@ -22,7 +22,7 @@ pipeline {
         bat "docker-compose up"
           }
       }
-        }
+        
           stage('run') {
       steps {
         // script {
