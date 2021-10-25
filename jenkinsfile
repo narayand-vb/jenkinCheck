@@ -1,40 +1,56 @@
 pipeline {
-    agent any
-    // tools {nodejs "node"}
+    agent any 
     environment {
-    registry = "narayandvb/jenkin-docker"
-    dockerImage = ''
-    registryCredential = 'dockerCred'
-  }
-    stages{
-        stage("fetching"){
-            steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/user']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/narayand-vb/jenkinCheck']]])
-            }
-        }
-        stage("build"){
-            steps{
-                bat "npm install"
-            }
-        }
-        stage('image') {
-      steps {
-        script {
-          dockerImage = docker.build registry
-          docker.withRegistry('', registryCredential) {
-            dockerImage.push()
-          }
-          }
-      }
-        }
-          stage('run') {
-      steps {
-        script {
-          dockerImage = docker.image('narayandvb/jenkin-docker')
-          dockerImage.run("-p 3000:3000 --rm --name firstreact")
-        }
-      }
-    }
+        //TODO # 1 --> once you sign up for Docker hub, use that user_id here
+        registry = "narayandvb/firstreact"
+        //TODO #2 - update your credentials ID after creating credentials for connecting to Docker Hub
+        registryCredential = 'dockerCred'
+        dockerImage = ''
     }
     
-}
+    stages {
+        stage('Cloning Git') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/user']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/narayand-vb/jenkinCheck']]])       
+            }
+        }
+    
+    // Building Docker images
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry
+        }
+      }
+    }
+    
+     // Uploading Docker images into Docker Hub
+    stage('Upload Image') {
+     steps{    
+         script {
+            docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+            }
+        }
+      }
+    }
+    
+     // Stopping Docker containers for cleaner Docker run
+     stage('docker stop container') {
+         steps {
+            sh 'docker ps -f name=firstreact -q | xargs --no-run-if-empty docker container stop'
+            sh 'docker container ls -a -fname=firstreact -q | xargs -r docker container rm'
+         }
+       }
+    
+    
+    // Running Docker container, make sure port 8096 is opened in 
+    stage('Docker Run') {
+     steps{
+         script {
+            dockerImage.run("-p 3000:3000 --rm --name firstreact")
+         }
+      }
+    }
+  }
+}  
