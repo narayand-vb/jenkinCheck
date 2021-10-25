@@ -1,27 +1,11 @@
-pipeline {
-    agent any
+node {
+    checkout scm
 
-    environment{
-        CI = true
-    }
-    stages {
-        stage('build') {
-            steps {
-                // sh "docker compose up"
-                echo "build"
-            }
-        }
+    docker.withRegistry('https://registry.hub.docker.com', 'dockerCred') {
 
-        stage('test') {
-            steps {
-                echo 'test successful'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo "Deployed"
-            }
-        }
-        
+        def customImage = docker.build("firstreact")
+
+        /* Push the container to the custom Registry */
+        customImage.push()
     }
 }
