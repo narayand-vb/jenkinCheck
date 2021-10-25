@@ -2,9 +2,9 @@ pipeline {
     agent any 
     environment {
         //TODO # 1 --> once you sign up for Docker hub, use that user_id here
-        registry = "narayandvb/reactfirst"
+        docker_hub = "narayandvb/reactfirst"
         //TODO #2 - update your credentials ID after creating credentials for connecting to Docker Hub
-        registryCredential = 'dockerCred'
+        dockerCredential = 'dockerCred'
         dockerImage = ''
     }
     
@@ -19,7 +19,7 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-          dockerImage = docker.build registry
+          dockerImage = docker.build docker_hub
         }
       }
     }
@@ -28,7 +28,7 @@ pipeline {
     stage('Upload Image') {
      steps{    
          script {
-            docker.withRegistry( '', registryCredential ) {
+            docker.withRegistry( '', dockerCredential ) {
             dockerImage.push()
             }
         }
