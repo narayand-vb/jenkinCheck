@@ -3,7 +3,7 @@ node {
 
     docker.withRegistry('https://registry.hub.docker.com', 'dockerCred') {
 
-        def customImage = docker.build("firstreact")
+        def customImage = docker.build("jenkinfirst")
 
         /* Push the container to the custom Registry */
         customImage.push()
